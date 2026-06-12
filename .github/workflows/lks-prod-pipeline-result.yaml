@@ -43,15 +43,6 @@ jobs:
 
         sed -i "s|IMAGE_URI|${{ env.ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:${{ github.sha }}|g" result/task-definition.json
 
-    - name: Deploy application images to Docker Swarm
-      run: |
-        docker node ls
-        docker service ls
-        docker stack ls
-        docker stack rm stackdemo
-        sleep 30
-        docker stack deploy --compose-file docker-stack.yml stackdemo
-
     - name: my-step
       run: echo "Hello World!"
 
