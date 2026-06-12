@@ -1,0 +1,54 @@
+{
+    "containerDefinitions": [
+        {
+            "name": "lks-result-container",
+            "image": "IMAGE_URI",
+            "cpu": 0,
+            "portMappings": [
+                {
+                    "containerPort": 80,
+                    "hostPort": 80,
+                    "protocol": "tcp"
+                }
+            ],
+            "essential": true,
+            "environment": [],
+            "environmentFiles": [],
+            "mountPoints": [],
+            "volumesFrom": [],
+            "secrets": [
+                {
+                    "name": "POSTGRES_CONNECTION_STRING",
+                    "valueFrom": "/lks/result-db-url"
+                }
+            ],
+            "ulimits": [],
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "/ecs/lks-td-result",
+                    "awslogs-create-group": "true",
+                    "awslogs-region": "us-east-1",
+                    "awslogs-stream-prefix": "ecs"
+                },
+                "secretOptions": []
+            },
+            "systemControls": []
+        }
+    ],
+    "family": "lks-td-result",
+    "taskRoleArn": "arn:aws:iam::935876732218:role/LabRole",
+    "executionRoleArn": "arn:aws:iam::935876732218:role/LabRole",
+    "networkMode": "awsvpc",
+    "volumes": [],
+    "runtimePlatform": {
+        "cpuArchitecture": "X86_64",
+        "operatingSystemFamily": "LINUX"
+    },
+    "requiresCompatibilities": [
+        "FARGATE"
+    ],
+    "cpu": "1024",
+    "memory": "3072",
+    "enableFaultInjection": false
+}
