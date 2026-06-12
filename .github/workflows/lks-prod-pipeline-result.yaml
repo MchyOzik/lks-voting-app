@@ -41,7 +41,7 @@ jobs:
     - name: Update image in taskdef.json
       run: |
 
-        sed -i "s|IMAGE_URI|${{ env.ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:${{ github.sha }}|g" ${{ env.TASKDEF_PATH }}
+        sed -i "s|IMAGE_URI|${{ env.ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:${{ github.sha }}|g" result/task-definition.json
 
     - name: Deploy application images to Docker Swarm
       run: |
