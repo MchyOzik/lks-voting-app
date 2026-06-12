@@ -4,7 +4,13 @@
             "name": "lks-vote-container",
             "image": "IMAGE_URI",
             "cpu": 0,
-            "portMappings": [],
+            "portMappings": [
+                {
+                    "containerPort": 80,
+                    "hostPort": 80,
+                    "protocol": "tcp"
+                }
+            ],
             "essential": true,
             "environment": [],
             "environmentFiles": [],

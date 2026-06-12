@@ -1,0 +1,65 @@
+name: Deploy to Amazon ECS
+
+on:
+  push:
+    branches: [ "main" ]
+
+env:
+  AWS_REGION: us-east-1
+  ECS_CLUSTER: lks-voting-cluster
+  ECS_SERVICE: lks-vote-service
+  ECS_TASK_DEFINITION: lks-td-vote
+  ACCOUNT_ID: 935876732218
+  ECR_REPOSITORY: lks-voting-image
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+        aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+        aws-region: ${{ env.AWS_REGION }}
+    
+    - name: Build and push image
+      run: |
+        aws ecr get-login-password --region ${{ env.AWS_REGION }} | docker login --username AWS --password-stdin ${{ env.ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com
+        
+        docker build -t ${{ env.ECR_REPOSITORY }} ./vote
+        docker tag ${{ env.ECR_REPOSITORY }}:latest ${{ env.ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:${{ github.sha }}
+        docker push ${{ env.ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:${{ github.sha }}
+
+    - name: Update image in taskdef.json
+      run: |
+
+        sed -i "s|IMAGE_URI|${{ env.ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:${{ github.sha }}|g" vote/task-definition.json
+
+    - name: my-step
+      run: echo "Hello World!"
+
+    - name: Register task definition
+      run: |
+        aws ecs register-task-definition \
+          --cli-input-json file://vote/task-definition.json
+
+    - name: Update service
+      run: |
+        aws ecs update-service \
+          --cluster ${{ env.ECS_CLUSTER }} \
+          --service ${{ env.ECS_SERVICE }} \
+          --task-definition lks-td-vote \
+          --force-new-deployment
+
+    - name: Publish Message To SNS Subscribers
+      env:
+        TOPIC_ARN: ${{ secrets.AWS_SNS_ARN }}
+      run: aws sns publish --topic-arn $TOPIC_ARN --subject "Hello from Jawa Timur!" --message "New version The Voting App from Jawa Timur is Released !!"
