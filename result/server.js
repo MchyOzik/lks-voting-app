@@ -18,10 +18,7 @@ io.on('connection', function (socket) {
 });
 
 var pool = new Pool({
-  connectionString: process.env.POSTGRES_CONNECTION_STRING || 'postgres://postgres:postgres@db/postgres', 
-  ssl: {
-    rejectUnauthorized: false
-  }
+  connectionString: process.env.POSTGRES_CONNECTION_STRING || 'postgres://postgres:postgres@db/postgres'
 });
 
 async.retry(
@@ -29,7 +26,7 @@ async.retry(
   function(callback) {
     pool.connect(function(err, client, done) {
       if (err) {
-        console.error("Waiting for db", err);
+        console.error("Waiting for db rozik", err);
       }
       callback(err, client);
     });
