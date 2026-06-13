@@ -8,7 +8,9 @@
                 {
                     "containerPort": 80,
                     "hostPort": 80,
-                    "protocol": "tcp"
+                    "protocol": "tcp",
+                    "name": "lks-vote-container-80-tcp",
+                    "appProtocol": "http"
                 }
             ],
             "essential": true,
@@ -37,8 +39,8 @@
         }
     ],
     "family": "lks-td-vote",
-    "taskRoleArn": "arn:aws:iam::935876732218:role/LabRole",
-    "executionRoleArn": "arn:aws:iam::935876732218:role/LabRole",
+    "taskRoleArn": "arn:aws:iam::210748260064:role/LabRole",
+    "executionRoleArn": "arn:aws:iam::210748260064:role/LabRole",
     "networkMode": "awsvpc",
     "volumes": [],
     "runtimePlatform": {
