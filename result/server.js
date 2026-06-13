@@ -19,7 +19,9 @@ io.on('connection', function (socket) {
 
 var pool = new Pool({
   connectionString: process.env.POSTGRES_CONNECTION_STRING || 'postgres://postgres:postgres@db/postgres', 
-  ssl: false
+  ssl: {
+    rejectUnauthorized: false
+  }
 });
 
 async.retry(
