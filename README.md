@@ -53,7 +53,7 @@ You can configure external PostgreSQL and Redis connections using environment va
     *   **Example:** `lks-redis.lfc5mu.ng.0001.use1.cache.amazonaws.com`
 *   `POSTGRES_CONNECTION_STRING`: The connection string for your PostgreSQL database. Used by the `result` and `worker` services. Note that the expected format differs slightly depending on the service:
     *   **Example for `result` (Node.js):** `postgres://postgres:LKSNCC2024@lks-rds.cvnb1e2wtrmb.us-east-1.rds.amazonaws.com/postgres`
-    *   **Example for `worker` (.NET):** `Server=lks-rds.cvnb1e2wtrmb.us-east-1.rds.amazonaws.com:5432;Username=postgres;Password=LKSNCC2024;`
+    *   **Example for `worker` (.NET):** `Server=lks-rds.cvnb1e2wtrmb.us-east-1.rds.amazonaws.com:5432;Username=postgres;Password=LKSNCC2024;Database=voting_data;`
 
 ## Notes
 
