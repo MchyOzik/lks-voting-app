@@ -72,20 +72,15 @@ namespace Worker
 
             while (true)
             {
-                try
+                catch (SocketException ex)
                 {
-                    connection = new NpgsqlConnection(connectionString);
-                    connection.Open();
-                    break;
-                }
-                catch (SocketException)
-                {
-                    Console.Error.WriteLine("Waiting for db");
+                    // ex.Message akan menampilkan pesan error singkat
+                    Console.Error.WriteLine($"Waiting for db. Socket error: {ex.Message}");
                     Thread.Sleep(1000);
                 }
-                catch (DbException)
+                catch (DbException ex)
                 {
-                    Console.Error.WriteLine("Waiting for db");
+                    Console.Error.WriteLine($"Waiting for db. Database error: {ex.Message}");
                     Thread.Sleep(1000);
                 }
             }
@@ -98,7 +93,7 @@ namespace Worker
                                         vote VARCHAR(255) NOT NULL
                                     )";
             command.ExecuteNonQuery();
-
+               
             return connection;
         }
 
