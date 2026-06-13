@@ -6,10 +6,10 @@ on:
 
 env:
   AWS_REGION: us-east-1
-  ECS_CLUSTER: lks-voting-cluster
+  ECS_CLUSTER: lks-voting-clusters
   ECS_SERVICE: lks-result-service
   ECS_TASK_DEFINITION: lks-td-result
-  ACCOUNT_ID: 935876732218
+  ACCOUNT_ID: 210748260064
   ECR_REPOSITORY: lks-voting-image
 
 jobs:
