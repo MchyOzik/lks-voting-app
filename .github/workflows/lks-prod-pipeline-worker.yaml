@@ -62,4 +62,4 @@ jobs:
     - name: Publish Message To SNS Subscribers
       env:
         TOPIC_ARN: ${{ secrets.AWS_SNS_ARN }}
-      run: aws sns publish --topic-arn $TOPIC_ARN --subject "Helloo from Jawa Timur!" --message "New version The Voting App from Jawa Timur is Released !!"
+      run: aws sns publish --topic-arn $TOPIC_ARN --subject "Hello from Jawa Timur!" --message "New version The Voting App from Jawa Timur is Released !!"
