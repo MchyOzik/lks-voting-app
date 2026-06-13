@@ -72,6 +72,12 @@ namespace Worker
 
             while (true)
             {
+                try
+                {
+                    connection = new NpgsqlConnection(connectionString);
+                    connection.Open();
+                    break;
+                }
                 catch (SocketException ex)
                 {
                     // ex.Message akan menampilkan pesan error singkat
