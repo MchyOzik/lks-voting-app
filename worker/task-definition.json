@@ -14,6 +14,10 @@
                 {
                     "name": "POSTGRES_CONNECTION_STRING",
                     "valueFrom": "/lks/worker-db-url"
+                },
+                {
+                    "name": "REDIS_HOST",
+                    "valueFrom": "/lks/redis-host"
                 }
             ],
             "ulimits": [],
