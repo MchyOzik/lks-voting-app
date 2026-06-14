@@ -40,12 +40,12 @@ jobs:
 
     - name: Update image in taskdef.json
       run: |
-        sed -i "s|IMAGE_URI|${{ env.ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:-vote${{ github.sha }}|g" vote/taskdefinition.json
+        sed -i "s|IMAGE_URI|${{ env.ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:-vote${{ github.sha }}|g" vote/task-definition.json
 
     - name: Register task definition
       run: |
         aws ecs register-task-definition \
-          --cli-input-json file://vote/taskdefinition.json
+          --cli-input-json file://vote/task-definition.json
 
     - name: Pull image
       id: pull-image
