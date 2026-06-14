@@ -1,4 +1,4 @@
-name: Deploy vote app
+name: Deploy worker app
 
 on:
   push:
