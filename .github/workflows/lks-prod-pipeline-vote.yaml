@@ -30,18 +30,18 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
         aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
         aws-region: ${{ env.AWS_REGION }}
-        
+
     - name: Login to Amazon ECR
       run: |
         aws ecr get-login-password --region ${{ env.AWS_REGION }} | docker login --username AWS --password-stdin ${{ env.ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com
         
         docker build -t ${{ env.ECR_REPOSITORY }} ./vote
-        docker tag ${{ env.ECR_REPOSITORY }}:vote-latest ${{ env.ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:-vote${{ github.sha }}
-        docker push ${{ env.ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:-vote${{ github.sha }}
+        docker tag ${{ env.ECR_REPOSITORY }}:vote-latest ${{ env.ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:vote-${{ github.sha }}
+        docker push ${{ env.ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:vote-${{ github.sha }}
 
     - name: Update image in taskdef.json
       run: |
-        sed -i "s|IMAGE_URI|${{ env.ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:-vote${{ github.sha }}|g" vote/task-definition.json
+        sed -i "s|IMAGE_URI|${{ env.ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:vote-${{ github.sha }}|g" vote/task-definition.json
 
     - name: Register task definition
       run: |
