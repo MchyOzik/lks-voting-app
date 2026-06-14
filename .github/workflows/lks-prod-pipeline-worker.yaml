@@ -35,7 +35,7 @@ jobs:
       run: |
         aws ecr get-login-password --region ${{ env.AWS_REGION }} | docker login --username AWS --password-stdin ${{ env.ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com
         
-        docker build -t ${{ env.ECR_REPOSITORY }} ./worker
+        docker build -t ${{ env.ECR_REPOSITORY }}:worker-latest ./worker
         docker tag ${{ env.ECR_REPOSITORY }}:worker-latest ${{ env.ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:worker-${{ github.sha }}
         docker push ${{ env.ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:worker-${{ github.sha }}
 
