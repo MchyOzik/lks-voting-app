@@ -39,13 +39,8 @@
         }
     ],
     "family": "lks-td-vote",
-<<<<<<< HEAD
     "taskRoleArn": "arn:aws:iam::214365501455:role/LabRole",
     "executionRoleArn": "arn:aws:iam::214365501455:role/LabRole",
-=======
-    "taskRoleArn": "arn:aws:iam::210748260064:role/LabRole",
-    "executionRoleArn": "arn:aws:iam::210748260064:role/LabRole",
->>>>>>> 7a908985d5b2c35184fdaaea154c66164128dade
     "networkMode": "awsvpc",
     "volumes": [],
     "runtimePlatform": {

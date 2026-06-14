@@ -39,8 +39,8 @@
         }
     ],
     "family": "lks-td-result",
-    "taskRoleArn": "arn:aws:iam::210748260064:role/LabRole",
-    "executionRoleArn": "arn:aws:iam::210748260064:role/LabRole",
+    "taskRoleArn": "arn:aws:iam::214365501455:role/LabRole",
+    "executionRoleArn": "arn:aws:iam::214365501455:role/LabRole",
     "networkMode": "awsvpc",
     "volumes": [],
     "runtimePlatform": {
