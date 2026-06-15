@@ -12,21 +12,12 @@
             "volumesFrom": [],
             "secrets": [
                 {
-<<<<<<< HEAD
                     "name": "REDIS_HOST",
                     "valueFrom": "/lks/redis-host"
                 },
                 {
                     "name": "POSTGRES_CONNECTION_STRING",
                     "valueFrom": "/lks/worker-db-url"
-=======
-                    "name": "POSTGRES_CONNECTION_STRING",
-                    "valueFrom": "/lks/worker-db-url"
-                },
-                {
-                    "name": "REDIS_HOST",
-                    "valueFrom": "/lks/redis-host"
->>>>>>> b5ec91566f5c69876419d09432aeba455cdcba3f
                 }
             ],
             "ulimits": [],
