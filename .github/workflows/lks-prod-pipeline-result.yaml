@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-name: Deploy to Amazon ECS
-=======
-name: Deploy result app
->>>>>>> b5ec91566f5c69876419d09432aeba455cdcba3f
+name: Deploy to Amazon ECS result
 
 on:
   push:
@@ -12,19 +8,11 @@ env:
   AWS_REGION: us-east-1
   ECR_REPOSITORY: lks-voting-image
   ECS_SERVICE: lks-result-service
-<<<<<<< HEAD
   ECS_CLUSTER: lks-voting-cluster
   ECS_TASK_DEFINITION: lks-td-result
   ACCOUNT_ID: 214365501455
 
 
-=======
-  ECS_CLUSTER: lks-voting-clusters
-  ECS_TASK_DEFINITION: lks-td-result
-  ENV: "dev"
-  ACCOUNT_ID: 214365501455
-
->>>>>>> b5ec91566f5c69876419d09432aeba455cdcba3f
 jobs:
   deploy:
     name: Deploy
@@ -32,22 +20,11 @@ jobs:
     environment: production
 
     steps:
-<<<<<<< HEAD
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-=======
-    - name: Checkout
-      uses: actions/checkout@v4
-
-    - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
->>>>>>> b5ec91566f5c69876419d09432aeba455cdcba3f
         aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
         aws-region: ${{ env.AWS_REGION }}
 
@@ -61,11 +38,7 @@ jobs:
 
     - name: Update image in taskdef.json
       run: |
-<<<<<<< HEAD
         sed -i "s|IMAGE_URI|${{ env.ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:result-${{ github.sha }}|g" /result/task-definition.json
-=======
-        sed -i "s|IMAGE_URI|${{ env.ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:result-${{ github.sha }}|g" result/task-definition.json
->>>>>>> b5ec91566f5c69876419d09432aeba455cdcba3f
 
     - name: Register task definition
       run: |
@@ -80,18 +53,7 @@ jobs:
           --task-definition ${{ env.ECS_TASK_DEFINITION }} \
           --force-new-deployment
 
-<<<<<<< HEAD
     - name: Publish Message To SNS Subscribers
       env:
         TOPIC_ARN: ${{ secrets.AWS_SNS_ARN }}
       run: aws sns publish --topic-arn $TOPIC_ARN --subject "Hello, from Indonesia" --message "New Version Is Released"
-=======
-    - name: my-step
-      run: echo "Hello World!"
-
-    - name: Publish Message To SNS Subscribers
-      env:
-        TOPIC_ARN: ${{ secrets.AWS_SNS_ARN }}
-      run: aws sns publish --topic-arn $TOPIC_ARN --subject "Hello, from Indonesia" --message "New Version Is Released"
-    
->>>>>>> b5ec91566f5c69876419d09432aeba455cdcba3f
