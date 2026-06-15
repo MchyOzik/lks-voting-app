@@ -16,9 +16,18 @@ namespace Worker
         {
             try
             {
-                var pgsql = OpenDbConnection(Environment.GetEnvironmentVariable("POSTGRES_CONNECTION_STRING") ?? "Server=db;Username=postgres;Password=postgres;");
-                var redisConn = OpenRedisConnection(Environment.GetEnvironmentVariable("REDIS_HOST") ?? "redis");
-                var redis = redisConn.GetDatabase();
+                Console.WriteLine(
+                    $"POSTGRES_CONNECTION_STRING={Environment.GetEnvironmentVariable("POSTGRES_CONNECTION_STRING")}"
+                );
+
+                var pgsql = OpenDbConnection(
+                    Environment.GetEnvironmentVariable("POSTGRES_CONNECTION_STRING")
+                    ?? "Server=db;Username=postgres;Password=postgres;"
+                );
+
+                var redisConn = OpenRedisConnection(
+                    Environment.GetEnvironmentVariable("REDIS_HOST") ?? "redis"
+                );
 
                 // Keep alive is not implemented in Npgsql yet. This workaround was recommended:
                 // https://github.com/npgsql/npgsql/issues/1214#issuecomment-235828359
@@ -78,14 +87,15 @@ namespace Worker
                     connection.Open();
                     break;
                 }
-                catch (SocketException)
+                catch (SocketException ex)
                 {
-                    Console.Error.WriteLine("Waiting for db");
+                    // ex.Message akan menampilkan pesan error singkat
+                    Console.Error.WriteLine($"Waiting for db. Socket error: {ex.Message}");
                     Thread.Sleep(1000);
                 }
-                catch (DbException)
+                catch (DbException ex)
                 {
-                    Console.Error.WriteLine("Waiting for db");
+                    Console.Error.WriteLine($"Waiting for db. Database error: {ex.Message}");
                     Thread.Sleep(1000);
                 }
             }
@@ -98,7 +108,7 @@ namespace Worker
                                         vote VARCHAR(255) NOT NULL
                                     )";
             command.ExecuteNonQuery();
-
+               
             return connection;
         }
 
