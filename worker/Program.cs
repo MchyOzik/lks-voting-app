@@ -29,6 +29,7 @@ namespace Worker
                     Environment.GetEnvironmentVariable("REDIS_HOST") ?? "redis"
                 );
 
+                var redis = redisConn.GetDatabase();
                 // Keep alive is not implemented in Npgsql yet. This workaround was recommended:
                 // https://github.com/npgsql/npgsql/issues/1214#issuecomment-235828359
                 var keepAliveCommand = pgsql.CreateCommand();
