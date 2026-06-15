@@ -4,16 +4,17 @@
             "name": "lks-result-container",
             "image": "IMAGE_URI",
             "cpu": 0,
+            "links": [],
             "portMappings": [
                 {
                     "containerPort": 80,
                     "hostPort": 80,
-                    "protocol": "tcp",
-                    "name": "lks-result-container-80-tcp",
-                    "appProtocol": "http"
+                    "protocol": "tcp"
                 }
             ],
             "essential": true,
+            "entryPoint": [],
+            "command": [],
             "environment": [],
             "environmentFiles": [],
             "mountPoints": [],
@@ -24,18 +25,23 @@
                     "valueFrom": "/lks/result-db-url"
                 }
             ],
+            "dnsServers": [],
+            "dnsSearchDomains": [],
+            "extraHosts": [],
+            "dockerSecurityOptions": [],
+            "dockerLabels": {},
             "ulimits": [],
             "logConfiguration": {
                 "logDriver": "awslogs",
                 "options": {
-                    "awslogs-group": "/ecs/lks-td-result",
-                    "awslogs-create-group": "true",
+                    "awslogs-group": "/ecs/result",
                     "awslogs-region": "us-east-1",
                     "awslogs-stream-prefix": "ecs"
                 },
                 "secretOptions": []
             },
-            "systemControls": []
+            "systemControls": [],
+            "credentialSpecs": []
         }
     ],
     "family": "lks-td-result",
@@ -50,7 +56,7 @@
     "requiresCompatibilities": [
         "FARGATE"
     ],
-    "cpu": "1024",
-    "memory": "3072",
+    "cpu": "256",
+    "memory": "512",
     "enableFaultInjection": false
 }

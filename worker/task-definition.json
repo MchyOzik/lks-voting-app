@@ -4,34 +4,42 @@
             "name": "lks-worker-container",
             "image": "IMAGE_URI",
             "cpu": 0,
+            "links": [],
             "portMappings": [],
             "essential": true,
+            "entryPoint": [],
+            "command": [],
             "environment": [],
             "environmentFiles": [],
             "mountPoints": [],
             "volumesFrom": [],
             "secrets": [
                 {
-                    "name": "REDIS_HOST",
-                    "valueFrom": "/lks/redis-host"
-                },
-                {
                     "name": "POSTGRES_CONNECTION_STRING",
                     "valueFrom": "/lks/worker-db-url"
+                },
+                {
+                    "name": "REDIS_HOST",
+                    "valueFrom": "/lks/redis-host"
                 }
             ],
+            "dnsServers": [],
+            "dnsSearchDomains": [],
+            "extraHosts": [],
+            "dockerSecurityOptions": [],
+            "dockerLabels": {},
             "ulimits": [],
             "logConfiguration": {
                 "logDriver": "awslogs",
                 "options": {
-                    "awslogs-group": "/ecs/lks-td-worker",
-                    "awslogs-create-group": "true",
+                    "awslogs-group": "/ecs/worker",
                     "awslogs-region": "us-east-1",
                     "awslogs-stream-prefix": "ecs"
                 },
                 "secretOptions": []
             },
-            "systemControls": []
+            "systemControls": [],
+            "credentialSpecs": []
         }
     ],
     "family": "lks-td-worker",
@@ -46,7 +54,7 @@
     "requiresCompatibilities": [
         "FARGATE"
     ],
-    "cpu": "1024",
-    "memory": "3072",
+    "cpu": "256",
+    "memory": "512",
     "enableFaultInjection": false
 }
