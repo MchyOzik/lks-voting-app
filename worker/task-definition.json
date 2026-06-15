@@ -1,0 +1,52 @@
+{
+    "containerDefinitions": [
+        {
+            "name": "lks-worker-container",
+            "image": "IMAGE_URI",
+            "cpu": 0,
+            "portMappings": [],
+            "essential": true,
+            "environment": [],
+            "environmentFiles": [],
+            "mountPoints": [],
+            "volumesFrom": [],
+            "secrets": [
+                {
+                    "name": "REDIS_HOST",
+                    "valueFrom": "/lks/redis-host"
+                },
+                {
+                    "name": "POSTGRES_CONNECTION_STRING",
+                    "valueFrom": "/lks/worker-db-url"
+                }
+            ],
+            "ulimits": [],
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "/ecs/lks-td-worker",
+                    "awslogs-create-group": "true",
+                    "awslogs-region": "us-east-1",
+                    "awslogs-stream-prefix": "ecs"
+                },
+                "secretOptions": []
+            },
+            "systemControls": []
+        }
+    ],
+    "family": "lks-td-worker",
+    "taskRoleArn": "arn:aws:iam::214365501455:role/LabRole",
+    "executionRoleArn": "arn:aws:iam::214365501455:role/LabRole",
+    "networkMode": "awsvpc",
+    "volumes": [],
+    "runtimePlatform": {
+        "cpuArchitecture": "X86_64",
+        "operatingSystemFamily": "LINUX"
+    },
+    "requiresCompatibilities": [
+        "FARGATE"
+    ],
+    "cpu": "1024",
+    "memory": "3072",
+    "enableFaultInjection": false
+}
