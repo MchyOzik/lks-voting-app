@@ -1,4 +1,5 @@
 {
+    "taskDefinitionArn": "arn:aws:ecs:us-east-1:214365501455:task-definition/lks-td-worker:20",
     "containerDefinitions": [
         {
             "name": "lks-worker-container",
