@@ -48,7 +48,6 @@
     "taskRoleArn": "arn:aws:iam::214365501455:role/LabRole",
     "executionRoleArn": "arn:aws:iam::214365501455:role/LabRole",
     "networkMode": "awsvpc",
-    "revision": 26,
     "volumes": [
         {
             "name": "vote-volume",
@@ -63,54 +62,7 @@
             }
         }
     ],
-    "status": "ACTIVE",
-    "requiresAttributes": [
-        {
-            "name": "ecs.capability.execution-role-awslogs"
-        },
-        {
-            "name": "com.amazonaws.ecs.capability.ecr-auth"
-        },
-        {
-            "name": "com.amazonaws.ecs.capability.task-iam-role"
-        },
-        {
-            "name": "ecs.capability.execution-role-ecr-pull"
-        },
-        {
-            "name": "ecs.capability.secrets.ssm.environment-variables"
-        },
-        {
-            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.18"
-        },
-        {
-            "name": "ecs.capability.task-eni"
-        },
-        {
-            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.29"
-        },
-        {
-            "name": "com.amazonaws.ecs.capability.logging-driver.awslogs"
-        },
-        {
-            "name": "ecs.capability.efsAuth"
-        },
-        {
-            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.19"
-        },
-        {
-            "name": "ecs.capability.efs"
-        },
-        {
-            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.25"
-        }
-    ],
     "placementConstraints": [],
-    "compatibilities": [
-        "EC2",
-        "FARGATE",
-        "MANAGED_INSTANCES"
-    ],
     "runtimePlatform": {
         "cpuArchitecture": "X86_64",
         "operatingSystemFamily": "LINUX"
@@ -120,8 +72,5 @@
     ],
     "cpu": "1024",
     "memory": "3072",
-    "registeredAt": "2026-06-16T15:05:33.643Z",
-    "registeredBy": "arn:aws:sts::214365501455:assumed-role/voclabs/user5162909=156169-176",
-    "enableFaultInjection": false,
-    "tags": []
+    "enableFaultInjection": false
 }
