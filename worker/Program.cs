@@ -16,56 +16,40 @@ namespace Worker
         {
             try
             {
-                Console.WriteLine("=== ENV DEBUG ===");
-                Console.WriteLine($"POSTGRES_CONNECTION_STRING: {Environment.GetEnvironmentVariable("POSTGRES_CONNECTION_STRING")}");
-                Console.WriteLine($"REDIS_HOST: {Environment.GetEnvironmentVariable("REDIS_HOST")}");
-                Console.WriteLine("=================");
-
-                var pgConnStr = Environment.GetEnvironmentVariable("POSTGRES_CONNECTION_STRING");
-
-                if (string.IsNullOrWhiteSpace(pgConnStr))
-                    throw new Exception("❌ POSTGRES_CONNECTION_STRING IS EMPTY!");
-
-                var redisHost = Environment.GetEnvironmentVariable("REDIS_HOST");
-
-                if (string.IsNullOrWhiteSpace(redisHost))
-                    throw new Exception("❌ REDIS_HOST IS EMPTY!");
-
-                var pgsql = OpenDbConnection(pgConnStr);
-                var redisConn = OpenRedisConnection(redisHost);
-
+                var pgsql = OpenDbConnection(Environment.GetEnvironmentVariable("POSTGRES_CONNECTION_STRING") ?? "Server=db;Username=postgres;Password=postgres;");
+                var redisConn = OpenRedisConnection(Environment.GetEnvironmentVariable("REDIS_HOST") ?? "redis");
                 var redis = redisConn.GetDatabase();
 
+                // Keep alive is not implemented in Npgsql yet. This workaround was recommended:
+                // https://github.com/npgsql/npgsql/issues/1214#issuecomment-235828359
                 var keepAliveCommand = pgsql.CreateCommand();
                 keepAliveCommand.CommandText = "SELECT 1";
 
                 var definition = new { vote = "", voter_id = "" };
-
                 while (true)
                 {
+                    // Slow down to prevent CPU spike, only query each 100ms
                     Thread.Sleep(100);
 
-                    if (redisConn == null || !redisConn.IsConnected)
-                    {
-                        Console.WriteLine("🔄 Reconnecting Redis...");
-                        redisConn = OpenRedisConnection(redisHost);
+                    // Reconnect redis if down
+                    if (redisConn == null || !redisConn.IsConnected) {
+                        Console.WriteLine("Reconnecting Redis");
+                        redisConn = OpenRedisConnection(Environment.GetEnvironmentVariable("REDIS_HOST") ?? "redis");
                         redis = redisConn.GetDatabase();
                     }
-
                     string json = redis.ListLeftPopAsync("votes").Result;
-
                     if (json != null)
                     {
                         var vote = JsonConvert.DeserializeAnonymousType(json, definition);
-                        Console.WriteLine($"🗳 Processing vote '{vote.vote}' by '{vote.voter_id}'");
-
-                        if (pgsql.State != System.Data.ConnectionState.Open)
+                        Console.WriteLine($"Processing vote for '{vote.vote}' by '{vote.voter_id}'");
+                        // Reconnect DB if down
+                        if (!pgsql.State.Equals(System.Data.ConnectionState.Open))
                         {
-                            Console.WriteLine("🔄 Reconnecting DB...");
-                            pgsql = OpenDbConnection(pgConnStr);
+                            Console.WriteLine("Reconnecting DB");
+                            pgsql = OpenDbConnection(Environment.GetEnvironmentVariable("POSTGRES_CONNECTION_STRING") ?? "Server=db;Username=postgres;Password=postgres;");
                         }
                         else
-                        {
+                        { // Normal +1 vote requested
                             UpdateVote(pgsql, vote.voter_id, vote.vote);
                         }
                     }
@@ -77,7 +61,6 @@ namespace Worker
             }
             catch (Exception ex)
             {
-                Console.Error.WriteLine("💥 FATAL ERROR");
                 Console.Error.WriteLine(ex.ToString());
                 return 1;
             }
@@ -85,87 +68,73 @@ namespace Worker
 
         private static NpgsqlConnection OpenDbConnection(string connectionString)
         {
+            NpgsqlConnection connection;
+
             while (true)
             {
                 try
                 {
-                    Console.WriteLine("🔌 Connecting to PostgreSQL...");
-
-                    var connection = new NpgsqlConnection(connectionString);
+                    connection = new NpgsqlConnection(connectionString);
                     connection.Open();
-
-                    Console.WriteLine("✅ Connected to PostgreSQL");
-
-                    var command = connection.CreateCommand();
-                    command.CommandText = @"
-                        CREATE TABLE IF NOT EXISTS votes (
-                            id VARCHAR(255) NOT NULL UNIQUE,
-                            vote VARCHAR(255) NOT NULL
-                        )";
-                    command.ExecuteNonQuery();
-
-                    return connection;
+                    break;
                 }
-                catch (SocketException ex)
+                catch (SocketException)
                 {
-                    Console.Error.WriteLine("❌ DB SOCKET ERROR");
-                    Console.Error.WriteLine(ex.Message);
-                    Thread.Sleep(2000);
+                    Console.Error.WriteLine("Waiting for db");
+                    Thread.Sleep(1000);
                 }
-                catch (DbException ex)
+                catch (DbException)
                 {
-                    Console.Error.WriteLine("❌ DB ERROR");
-                    Console.Error.WriteLine(ex.Message);
-                    Thread.Sleep(2000);
+                    Console.Error.WriteLine("Waiting for db");
+                    Thread.Sleep(1000);
                 }
             }
+
+            Console.Error.WriteLine("Connected to db");
+
+            var command = connection.CreateCommand();
+            command.CommandText = @"CREATE TABLE IF NOT EXISTS votes (
+                                        id VARCHAR(255) NOT NULL UNIQUE,
+                                        vote VARCHAR(255) NOT NULL
+                                    )";
+            command.ExecuteNonQuery();
+
+            return connection;
         }
 
         private static ConnectionMultiplexer OpenRedisConnection(string hostname)
         {
+            // Use IP address to workaround https://github.com/StackExchange/StackExchange.Redis/issues/410
+            var ipAddress = GetIp(hostname);
+            Console.WriteLine($"Found redis at {ipAddress}");
+
             while (true)
             {
                 try
                 {
-                    var ipAddress = GetIp(hostname);
-
-                    Console.WriteLine($"🔌 Connecting to Redis: {ipAddress}");
-
-                    var conn = ConnectionMultiplexer.Connect(ipAddress);
-
-                    Console.WriteLine("✅ Connected to Redis");
-
-                    return conn;
+                    Console.Error.WriteLine("Connecting to redis");
+                    return ConnectionMultiplexer.Connect(ipAddress);
                 }
-                catch (Exception ex)
+                catch (RedisConnectionException)
                 {
-                    Console.Error.WriteLine("❌ REDIS CONNECTION ERROR");
-                    Console.Error.WriteLine(ex.Message);
-                    Thread.Sleep(2000);
+                    Console.Error.WriteLine("Waiting for redis");
+                    Thread.Sleep(1000);
                 }
             }
         }
 
         private static string GetIp(string hostname)
-        {
-            try
-            {
-                return Dns.GetHostEntry(hostname)
-                    .AddressList
-                    .First(a => a.AddressFamily == AddressFamily.InterNetwork)
-                    .ToString();
-            }
-            catch (Exception ex)
-            {
-                throw new Exception($"❌ DNS RESOLVE FAILED for {hostname}: {ex.Message}");
-            }
-        }
+            => Dns.GetHostEntryAsync(hostname)
+                .Result
+                .AddressList
+                .First(a => a.AddressFamily == AddressFamily.InterNetwork)
+                .ToString();
 
         private static void UpdateVote(NpgsqlConnection connection, string voterId, string vote)
         {
+            var command = connection.CreateCommand();
             try
             {
-                var command = connection.CreateCommand();
                 command.CommandText = "INSERT INTO votes (id, vote) VALUES (@id, @vote)";
                 command.Parameters.AddWithValue("@id", voterId);
                 command.Parameters.AddWithValue("@vote", vote);
@@ -173,11 +142,12 @@ namespace Worker
             }
             catch (DbException)
             {
-                var command = connection.CreateCommand();
                 command.CommandText = "UPDATE votes SET vote = @vote WHERE id = @id";
-                command.Parameters.AddWithValue("@id", voterId);
-                command.Parameters.AddWithValue("@vote", vote);
                 command.ExecuteNonQuery();
+            }
+            finally
+            {
+                command.Dispose();
             }
         }
     }
