@@ -8,7 +8,7 @@ env:
   AWS_REGION: us-east-1
   ECR_REPOSITORY: lks-voting-image
   ECS_SERVICE: lks-worker-service
-  ECS_CLUSTER: lks-voting-cluster
+  ECS_CLUSTER: lks-voting-clusters
   ECS_TASK_DEFINITION: lks-td-worker
   ACCOUNT_ID: 214365501455
 
